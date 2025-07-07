@@ -44,6 +44,22 @@ final class ChainableClosure
     }
 
     /**
+     * Calls the given `$closure` and chains the `$next` closure in reverse order, "bound" to the same object.
+     * This is useful for teardown hooks where the execution order should be LIFO (Last In, First Out).
+     */
+    public static function reverseBound(Closure $closure, Closure $next): Closure
+    {
+        return function (...$arguments) use ($closure, $next): void {
+            if (! is_object($this)) { // @phpstan-ignore-line
+                throw ShouldNotHappen::fromMessage('$this not bound to chainable closure.');
+            }
+
+            \Pest\Support\Closure::bind($next, $this, self::class)(...$arguments);
+            \Pest\Support\Closure::bind($closure, $this, self::class)(...$arguments);
+        };
+    }
+
+    /**
      * Calls the given `$closure` and chains the `$next` closure, "unbound" of any object.
      */
     public static function unbound(Closure $closure, Closure $next): Closure

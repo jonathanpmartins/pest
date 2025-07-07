@@ -293,7 +293,7 @@ trait Testable
         $afterEach = TestSuite::getInstance()->afterEach->get(self::$__filename);
 
         if ($this->__afterEach instanceof Closure) {
-            $afterEach = ChainableClosure::bound($this->__afterEach, $afterEach);
+            $afterEach = ChainableClosure::reverseBound($this->__afterEach, $afterEach);
         }
 
         try {

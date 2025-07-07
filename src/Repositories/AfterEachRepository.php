@@ -28,7 +28,7 @@ final class AfterEachRepository
         if (array_key_exists($filename, $this->state)) {
             $fromAfterEachTestCase = $this->state[$filename];
 
-            $afterEachTestCase = ChainableClosure::bound($fromAfterEachTestCase, $afterEachTestCase)
+            $afterEachTestCase = ChainableClosure::reverseBound($fromAfterEachTestCase, $afterEachTestCase)
                 ->bindTo($afterEachCall, $afterEachCall::class);
         }
 
