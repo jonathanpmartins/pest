@@ -18,58 +18,54 @@ afterEach(function () {
 pest()->afterEach(function () {
     $this->teardownOrder[] = 'global-afterEach';
 
-    if (count($this->teardownOrder) === 2) {
-        expect($this->setupOrder)->toBe([
+    assertAfterEachHooksOrder($this->name());
+});
+
+function assertAfterEachHooksOrder(string $name) {
+    match ($name) {
+        '__pest_evaluable_simple_test' => expect(test()->setupOrder)->toBe([
             'global-beforeEach',
             'local-beforeEach',
-        ]);
-        expect($this->teardownOrder)->toBe([
+        ])->and(test()->teardownOrder)->toBe([
             'local-afterEach',
             'global-afterEach',
-        ]);
-    } elseif (count($this->teardownOrder) === 3) {
-        expect($this->setupOrder)->toBe([
+        ]),
+        '__pest_evaluable__nested_1__→_nested_test' => expect(test()->setupOrder)->toBe([
             'global-beforeEach',
             'local-beforeEach',
             'nested-beforeEach-1',
-        ]);
-        expect($this->teardownOrder)->toBe([
+        ])->and(test()->teardownOrder)->toBe([
             'nested-afterEach-1',
             'local-afterEach',
             'global-afterEach',
-        ]);
-    } elseif (count($this->teardownOrder) === 4) {
-        expect($this->setupOrder)->toBe([
+        ]),
+        '__pest_evaluable__nested_1__→__nested_2__→_setup_and_teardown_order_should_be_reversed' => expect(test()->setupOrder)->toBe([
             'global-beforeEach',
             'local-beforeEach',
             'nested-beforeEach-1',
             'nested-beforeEach-2',
-        ]);
-        expect($this->teardownOrder)->toBe([
+        ])->and(test()->teardownOrder)->toBe([
             'nested-afterEach-2',
             'nested-afterEach-1',
             'local-afterEach',
             'global-afterEach',
-        ]);
-    } elseif (count($this->teardownOrder) === 5) {
-        expect($this->setupOrder)->toBe([
+        ]),
+        '__pest_evaluable__nested_1__→__nested_2__→__nested_3__→_setup_and_teardown_order_should_be_reversed' => expect(test()->setupOrder)->toBe([
             'global-beforeEach',
             'local-beforeEach',
             'nested-beforeEach-1',
             'nested-beforeEach-2',
             'nested-beforeEach-3',
-        ]);
-        expect($this->teardownOrder)->toBe([
+        ])->and(test()->teardownOrder)->toBe([
             'nested-afterEach-3',
             'nested-afterEach-2',
             'nested-afterEach-1',
             'local-afterEach',
             'global-afterEach',
-        ]);
-    } else {
-        $this->fail('Unexpected teardown order');
-    }
-});
+        ]),
+        default => test()->fail('Unexpected test name: '.$name),
+    };
+}
 
 test('simple test', function () {
     expect($this->setupOrder)->toBe([
